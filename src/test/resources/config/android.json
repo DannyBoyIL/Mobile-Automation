@@ -1,0 +1,7 @@
+{
+    "platformName": "Android",
+    "automationName": "UiAutomator2",
+    "deviceName": "Android Emulator",
+    "platformVersion": "16.0",
+    "app": "/apps/android/TheApp.apk"
+}

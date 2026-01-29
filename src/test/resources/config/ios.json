@@ -1,0 +1,7 @@
+{
+    "platformName": "iOS",
+    "automationName": "XCUITest",
+    "deviceName": "iPhone 17 Pro",
+    "platformVersion": "26.1",
+    "app": "/apps/ios/TheApp.app.zip"
+}
