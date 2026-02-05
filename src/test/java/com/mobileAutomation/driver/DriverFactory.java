@@ -37,7 +37,11 @@ public class DriverFactory {
                 .setAutomationName(config.automationName)
                 .setDeviceName(config.deviceName)
                 .setPlatformVersion(config.platformVersion)
-                .setApp(System.getProperty("user.dir") + config.app);
+                .setApp(System.getProperty("user.dir") + config.app)
+                .setDisableSuppressAccessibilityService(true)
+                .setDisableWindowAnimation(true)
+                .setAutoGrantPermissions(true)
+                .amend("disableAutofill", true);
 
         return new AndroidDriver(new URL(APPIUM_URL), options);
     }
@@ -51,6 +55,9 @@ public class DriverFactory {
         options.setCapability("appium:deviceName", config.deviceName);
         options.setCapability("appium:platformVersion", config.platformVersion);
         options.setCapability("appium:app", System.getProperty("user.dir") + config.app);
+
+        options.setCapability("noReset", false);
+        options.setCapability("fullReset", false);
 
         return new IOSDriver(new URL(APPIUM_URL), options);
     }

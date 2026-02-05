@@ -1,41 +1,59 @@
 package com.mobileAutomation.pages;
 
-import io.appium.java_client.AppiumBy;
+import com.mobileAutomation.flows.LoginResult;
+import io.appium.java_client.pagefactory.AndroidFindBy;
+import io.appium.java_client.pagefactory.iOSXCUITFindBy;
+import org.openqa.selenium.WebElement;
+import org.testng.Assert;
 
 public class LoginPage extends BasePage {
 
-    private static final String LOGIN_SCREEN_BUTTON = "Login Screen";
-    private static final String USERNAME_FIELD = "username";
-    private static final String PASSWORD_FIELD = "password";
-    private static final String LOGIN_BUTTON = "loginBtn";
-    private static final String SUCCESS_MESSAGE = "successMessage";
-    private static final String ERROR_MESSAGE = "errorMessage";
+    @SuppressWarnings("unused")
+    @AndroidFindBy(xpath = "//android.widget.EditText[@resource-id='username']")
+    @iOSXCUITFindBy(accessibility = "username")
+    private WebElement usernameField;
 
-    public void openLoginScreen() {
-        click(LOGIN_SCREEN_BUTTON);
-    }
+    @SuppressWarnings("unused")
+    @AndroidFindBy(xpath = "//android.widget.EditText[@resource-id='password']")
+    @iOSXCUITFindBy(accessibility = "password")
+    private WebElement passwordField;
 
-    public void enterUsername(String username) {
+    @SuppressWarnings("unused")
+    @AndroidFindBy(xpath = "//android.widget.Button[@resource-id='loginBtn']")
+    @iOSXCUITFindBy(accessibility = "loginBtn")
+    private WebElement loginButton;
+
+    protected void enterUserName(String username) {
         if (username != null && !username.isEmpty()) {
-            type(USERNAME_FIELD, username);
+            clear(usernameField);
+            type(usernameField, username);
         }
     }
 
-    public void enterPassword(String password) {
+    protected void enterPassword(String password) {
         if (password != null && !password.isEmpty()) {
-            type(PASSWORD_FIELD, password);
+            clear(passwordField);
+            type(passwordField, password);
         }
     }
 
-    public void submitLogin() {
-        click(LOGIN_BUTTON);
+    public boolean isVisible() {
+        return isVisible(loginButton);
     }
 
-    public boolean isLoginSuccessful() {
-        return isDisplayed(SUCCESS_MESSAGE);
-    }
+    public LoginResult submitLogin(String user, String pw) {
+        enterUserName(user);
+        enterPassword(pw);
+        click(loginButton);
 
-    public boolean isLoginErrorDisplayed() {
-        return isDisplayed(ERROR_MESSAGE);
+        InvalidLoginDialog dialog = new InvalidLoginDialog();
+        SecretPage secretPage = new SecretPage();
+
+        if (dialog.isVisible()) {
+            return new LoginResult.Invalid();
+        }
+
+        Assert.assertTrue(secretPage.isVisible(), "Neither error nor success screen appeared");
+        return new LoginResult.Success(secretPage);
     }
 }

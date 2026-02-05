@@ -3,49 +3,97 @@ package com.mobileAutomation.pages;
 import com.mobileAutomation.driver.DriverManager;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.pagefactory.AppiumFieldDecorator;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
 import java.time.Duration;
 
 public abstract class BasePage {
 
-    private static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration TIMEOUT = Duration.ofSeconds(3);
 
-    protected AppiumDriver getDriver() {
+    protected BasePage() {
+        PageFactory.initElements(
+                new AppiumFieldDecorator(driver(), TIMEOUT),
+                this
+        );
+    }
+
+    protected AppiumDriver driver() {
         AppiumDriver driver = DriverManager.getDriver();
         if (driver == null) {
-            throw new IllegalStateException(
-                    "Driver is null. Did you forget to initialize it in Cucumber Hooks?"
-            );
+            throw new IllegalStateException("Driver not initialized. Check Hooks.");
         }
         return driver;
     }
 
-    protected WebDriverWait getWait() {
-        return new WebDriverWait(getDriver(), DEFAULT_TIMEOUT);
+    protected WebDriverWait waitUntil() {
+        return new WebDriverWait(driver(), TIMEOUT);
     }
 
-    protected WebElement findByAccessibilityId(String id) {
-        return getWait().until(
-                ExpectedConditions.visibilityOfElementLocated(
-                        AppiumBy.accessibilityId(id)
-                )
-        );
+    public void waitForVisibility(WebElement element) {
+        waitUntil().until(ExpectedConditions.visibilityOf(element));
     }
 
-    protected void click(String accessibilityId) {
-        findByAccessibilityId(accessibilityId).click();
+    public void waitForVisibility(By locator) {
+        waitUntil().until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
-    protected void type(String accessibilityId, String text) {
-        WebElement element = findByAccessibilityId(accessibilityId);
+    /* ---------- Locators ---------- */
+
+    protected static By byAccessibilityId(String id) {
+        return AppiumBy.accessibilityId(id);
+    }
+
+    protected static By byText(String text) {
+        return AppiumBy.xpath("//*[contains(@text,'" + text + "') or contains(@label,'" + text + "')]");
+    }
+
+    /* ---------- Actions ---------- */
+
+    protected void clear(WebElement element) {
+        waitForVisibility(element);
         element.clear();
+    }
+
+    protected void click(WebElement element) {
+        waitForVisibility(element);
+        element.click();
+    }
+
+    protected void type(WebElement element, String text) {
+        clear(element);
         element.sendKeys(text);
     }
 
-    protected boolean isDisplayed(String accessibilityId) {
-        return findByAccessibilityId(accessibilityId).isDisplayed();
+    public String getAttribute(WebElement element, String attribute) {
+        waitForVisibility(element);
+        return element.getAttribute(attribute);
+    }
+
+    protected String text(WebElement element) {
+        waitForVisibility(element);
+        return element.getText();
+    }
+
+    protected boolean isVisible(WebElement element) {
+        try {
+            waitForVisibility(element);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    protected boolean isVisible(By locator) {
+        try {
+            waitForVisibility(locator);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

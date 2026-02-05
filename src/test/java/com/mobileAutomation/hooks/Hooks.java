@@ -9,7 +9,9 @@ public class Hooks {
 
     @Before
     public void setUp() {
-        DriverManager.setDriver(DriverFactory.createDriver());
+        if (DriverManager.getDriver() == null) {
+            DriverManager.setDriver(DriverFactory.createDriver());
+        }
     }
 
     @After

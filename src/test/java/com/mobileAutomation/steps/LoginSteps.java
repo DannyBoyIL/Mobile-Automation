@@ -1,46 +1,71 @@
 package com.mobileAutomation.steps;
 
+import com.mobileAutomation.flows.LoginResult;
+import com.mobileAutomation.pages.HomePage;
+import com.mobileAutomation.pages.InvalidLoginDialog;
 import com.mobileAutomation.pages.LoginPage;
+import com.mobileAutomation.pages.SecretPage;
 import io.cucumber.java.en.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.Assert;
 
 public class LoginSteps {
 
+    private LoginResult loginResult;
+    private SecretPage secretPage;
+    private final HomePage homePage = new HomePage();
     private final LoginPage loginPage = new LoginPage();
+    private static final Logger logger = LoggerFactory.getLogger(LoginSteps.class);
 
     @Given("the application is launched")
-    public void appIsLaunched() {
-        // Driver is initialized in Hooks
+    public void appLaunched() {
+        // Driver & app are started by Hooks
+        // Intentionally empty
     }
 
-    @And("the user navigates to the Login screen")
-    public void navigateToLoginScreen() {
-        loginPage.openLoginScreen();
+    @Given("the user navigates to the login screen")
+    public void loginScreenNavigation() {
+        homePage.goToLogin();
     }
 
-    @When("the user enters username {string} and password {string}")
-    public void enterCredentials(String username, String password) {
-        loginPage.enterUsername(username);
-        loginPage.enterPassword(password);
+    @Given("the user is on the login screen")
+    public void verifyLoginScreen() {
+        Assert.assertTrue(loginPage.isVisible(), "Login screen not visible");
     }
 
-    @And("submits the login form")
-    public void submitLogin() {
-        loginPage.submitLogin();
+    @When("the user logs in with username {string} and password {string}")
+    public void login(String user, String pw) {
+        // loginResult = new LoginPage().submitLogin(user, pw);
+        loginResult = loginPage.submitLogin(user, pw);
     }
 
-    @Then("the login result should be {string}")
-    public void verifyLoginResult(String result) {
-        if ("success".equalsIgnoreCase(result)) {
-            Assert.assertTrue(
-                    loginPage.isLoginSuccessful(),
-                    "Expected login to succeed but it did not"
-            );
-        } else {
-            Assert.assertTrue(
-                    loginPage.isLoginErrorDisplayed(),
-                    "Expected login error but none was shown"
-            );
-        }
+    @Then("the secret area should be displayed")
+    public void secretArea() {
+        Assert.assertTrue(
+                loginResult instanceof LoginResult.Success,
+                "Expected successful login, but result was " + loginResult.getClass().getSimpleName()
+        );
+        secretPage = ((LoginResult.Success) loginResult).page();
+        //Assert.assertTrue(secretPage.isDisplayed());
+        Assert.assertTrue(secretPage.isVisible());
+    }
+
+    @And("the logged in user should be {string}")
+    public void verifyUser(String username) {
+        Assert.assertTrue(secretPage.loggedInUserText().contains(username), "Expected username to be displayed");
+        secretPage.logOut();
+    }
+
+    @Then("an invalid login alert should be shown")
+    public void invalidLogin() {
+        Assert.assertTrue(
+                loginResult instanceof LoginResult.Invalid,
+                "Expected invalid login result, but got " + loginResult.getClass().getSimpleName()
+        );
+        InvalidLoginDialog dialog = ((LoginResult.Invalid) loginResult).dialog();
+
+        Assert.assertTrue(dialog.isVisible());
+        dialog.accept();
     }
 }

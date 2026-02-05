@@ -1,23 +1,27 @@
-Feature: User login authentication
+Feature: Login to protected area
 
-  As a registered (or unregistered) user
-  I want to log in using the login form
-  So that I can access restricted areas of the application
+  As a user
+  I want to log in
+  So that I can access the secret area
 
   Background:
     Given the application is launched
-    And the user navigates to the Login screen
+    And the user navigates to the login screen
+    And the user is on the login screen
 
-  @login @smoke
-  Scenario Outline: User attempts to log in with different credentials
-    When the user enters username "<username>" and password "<password>"
-    And submits the login form
-    Then the login result should be "<result>"
+  @login @positive
+  Scenario: Login with valid credentials
+    When the user logs in with username "alice" and password "mypassword"
+    Then the secret area should be displayed
+    And the logged in user should be "alice"
+
+  @login @negative
+  Scenario Outline: Login with invalid credentials
+    When the user logs in with username "<username>" and password "<password>"
+    Then an invalid login alert should be shown
 
     Examples:
-      | username | password | result  |
-      | alice    | 123456   | success |
-      | bob      | wrong    | error   |
-      |          | 123456   | error   |
-      | alice    |          | error   |
-      |          |          | error   |
+      | username | password   |
+      | foo      | bar        |
+      | alice    | wrong      |
+      |          | mypassword |

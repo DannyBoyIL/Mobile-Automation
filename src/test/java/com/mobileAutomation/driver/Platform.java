@@ -1,6 +1,7 @@
 package com.mobileAutomation.driver;
 
 public enum Platform {
+
     ANDROID,
     IOS;
 
