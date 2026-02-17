@@ -12,7 +12,8 @@ import io.cucumber.testng.CucumberOptions;
         },
         plugin = {
                 "pretty",
-                "summary"
+                "summary",
+                "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
         },
         tags = "@login"
 )

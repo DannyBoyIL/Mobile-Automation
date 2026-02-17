@@ -18,8 +18,7 @@ public class InvalidLoginDialog extends BasePage {
         return isVisible(errorMessage);
     }
 
-    public LoginPage accept() {
+    public void accept() {
         click(okButton);
-        return new LoginPage();
     }
 }

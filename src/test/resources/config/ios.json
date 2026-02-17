@@ -1,7 +1,7 @@
 {
     "platformName": "iOS",
     "automationName": "XCUITest",
-    "deviceName": "iPhone 15",
+    "deviceName": "iPhone 16e",
     "platformVersion": "26.1",
     "app": "/apps/ios/TheApp.app.zip"
 }

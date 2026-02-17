@@ -1,10 +1,10 @@
 package com.mobileAutomation.pages;
 
-import com.mobileAutomation.flows.LoginResult;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.iOSXCUITFindBy;
 import org.openqa.selenium.WebElement;
-import org.testng.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoginPage extends BasePage {
 
@@ -23,37 +23,27 @@ public class LoginPage extends BasePage {
     @iOSXCUITFindBy(accessibility = "loginBtn")
     private WebElement loginButton;
 
-    protected void enterUserName(String username) {
+    private static final Logger logger = LoggerFactory.getLogger(LoginPage.class);
+
+    public void login(String username, String password) {
+
+        logger.info("Entering credentials");
+
         if (username != null && !username.isEmpty()) {
             clear(usernameField);
             type(usernameField, username);
         }
-    }
 
-    protected void enterPassword(String password) {
         if (password != null && !password.isEmpty()) {
             clear(passwordField);
             type(passwordField, password);
         }
+
+        logger.info("Tapping Login button");
+        click(loginButton);
     }
 
     public boolean isVisible() {
         return isVisible(loginButton);
-    }
-
-    public LoginResult submitLogin(String user, String pw) {
-        enterUserName(user);
-        enterPassword(pw);
-        click(loginButton);
-
-        InvalidLoginDialog dialog = new InvalidLoginDialog();
-        SecretPage secretPage = new SecretPage();
-
-        if (dialog.isVisible()) {
-            return new LoginResult.Invalid();
-        }
-
-        Assert.assertTrue(secretPage.isVisible(), "Neither error nor success screen appeared");
-        return new LoginResult.Success(secretPage);
     }
 }

@@ -9,11 +9,16 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
 
 public abstract class BasePage {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(3);
+
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     protected BasePage() {
         PageFactory.initElements(
@@ -28,6 +33,14 @@ public abstract class BasePage {
             throw new IllegalStateException("Driver not initialized. Check Hooks.");
         }
         return driver;
+    }
+
+    protected String describe(WebElement element) {
+        try {
+            return element.toString();
+        } catch (Exception e) {
+            return "unknown element";
+        }
     }
 
     protected WebDriverWait waitUntil() {
@@ -60,11 +73,14 @@ public abstract class BasePage {
     }
 
     protected void click(WebElement element) {
+        logger.debug("Clicking element: {}", describe(element));
         waitForVisibility(element);
         element.click();
+        logger.debug("Click successful");
     }
 
     protected void type(WebElement element, String text) {
+        logger.debug("Typing '{}' into element: {}", text, describe(element));
         clear(element);
         element.sendKeys(text);
     }
@@ -91,8 +107,10 @@ public abstract class BasePage {
     protected boolean isVisible(By locator) {
         try {
             waitForVisibility(locator);
+            logger.debug("Element visible: {}", locator);
             return true;
         } catch (Exception e) {
+            logger.debug("Element NOT visible: {}", locator);
             return false;
         }
     }

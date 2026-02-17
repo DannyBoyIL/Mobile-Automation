@@ -4,11 +4,6 @@ Feature: Login to protected area
   I want to log in
   So that I can access the secret area
 
-  Background:
-    Given the application is launched
-    And the user navigates to the login screen
-    And the user is on the login screen
-
   @login @positive
   Scenario: Login with valid credentials
     When the user logs in with username "alice" and password "mypassword"

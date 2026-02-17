@@ -3,23 +3,9 @@ package com.mobileAutomation.flows;
 import com.mobileAutomation.pages.InvalidLoginDialog;
 import com.mobileAutomation.pages.SecretPage;
 
-public sealed interface LoginResult {
+public sealed interface LoginResult permits LoginResult.Success, LoginResult.Invalid {
 
-    final class Success implements LoginResult {
-        private final SecretPage page;
+    record Success(SecretPage page) implements LoginResult {}
 
-        public Success(SecretPage page) {
-            this.page = page;
-        }
-
-        public SecretPage page() {
-            return page;
-        }
-    }
-
-    final class Invalid implements LoginResult {
-        public InvalidLoginDialog dialog() {
-            return new InvalidLoginDialog();
-        }
-    }
+    record Invalid(InvalidLoginDialog dialog) implements LoginResult {}
 }
