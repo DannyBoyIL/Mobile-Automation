@@ -9,16 +9,16 @@ import org.slf4j.LoggerFactory;
 
 public class DriverManager {
 
-    private static String platform = "UNKNOWN";
     public static final String ANDROID_APP_ID = "com.appiumpro.the_app";
     public static final String IOS_BUNDLE_ID = "com.appiumpro.the_app";
 
+    private static final ThreadLocal<String> platform = ThreadLocal.withInitial(() -> "UNKNOWN");
     private static final ThreadLocal<AppiumDriver> driver = new ThreadLocal<>();
     private static final Logger logger = LoggerFactory.getLogger(DriverManager.class);
 
     public static void setDriver(AppiumDriver appiumDriver) {
         setPlatform(appiumDriver);
-        logger.info("Starting {} driver on thread {}", platform, Thread.currentThread().getId());
+        logger.info("Starting {} driver on thread {}", platform.get(), Thread.currentThread().getId());
         driver.set(appiumDriver);
     }
 
@@ -32,7 +32,7 @@ public class DriverManager {
 
     public static void quit() {
         if (driver.get() != null) {
-            logger.info("Quiting {} driver on thread {}", platform, Thread.currentThread().getId());
+            logger.info("Quiting {} driver on thread {}", platform.get(), Thread.currentThread().getId());
             driver.get().quit();
             driver.remove();
         }
@@ -40,9 +40,9 @@ public class DriverManager {
 
     private static void setPlatform(AppiumDriver appiumDriver) {
         if (appiumDriver instanceof AndroidDriver) {
-            platform = "Android";
+            platform.set("Android");
         } else if (appiumDriver instanceof IOSDriver) {
-            platform = "iOS";
+            platform.set("iOS");
         }
     }
 }
