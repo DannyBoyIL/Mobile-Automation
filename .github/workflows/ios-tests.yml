@@ -48,7 +48,7 @@ jobs:
 
       - name: Start Appium Server
         run: |
-          appium --log-level warn --base-path /wd/hub --port 4723 > appium.log 2>&1 &
+          appium --log-level warn --port 4723 > appium.log 2>&1 &
           sleep 5
 
       - name: Run iOS Tests
