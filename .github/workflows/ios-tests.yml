@@ -30,7 +30,12 @@ jobs:
           import json
           from pathlib import Path
           path = Path("src/test/resources/config/ios.json")
-          data = json.loads(path.read_text())
+          raw = path.read_text()
+          raw = "\n".join(
+              line for line in raw.splitlines()
+              if not line.lstrip().startswith("//")
+          )
+          data = json.loads(raw)
           data["deviceName"] = "${{ env.SIM_DEVICE }}"
           data["platformVersion"] = "${{ env.IOS_PLATFORM_VERSION }}"
           path.write_text(json.dumps(data, indent=4) + "\n")
