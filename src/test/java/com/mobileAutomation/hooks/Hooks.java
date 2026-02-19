@@ -22,14 +22,7 @@ public class Hooks {
 
         logger.info("========== TEST START ==========");
         logger.info("Scenario: {}", scenario.getName());
-
-        if (DriverManager.getDriver() == null) {
-            logger.info("Creating mobile driver session...");
-            DriverManager.setDriver(DriverFactory.createDriver());
-            logger.info("Driver session created successfully");
-        } else {
-            logger.warn("Driver already exists! Reusing session");
-        }
+        DriverManager.setDriver(DriverFactory.createDriver());
     }
 
     @AfterStep
@@ -42,10 +35,6 @@ public class Hooks {
         logger.error("Step failed! Capturing diagnostic artifacts...");
 
         var driver = DriverManager.getDriver();
-        if (driver == null) {
-            logger.error("Driver is null — cannot capture artifacts");
-            return;
-        }
 
         try {
 
@@ -82,15 +71,7 @@ public class Hooks {
             logger.info("SCENARIO PASSED: {}", scenario.getName());
         }
 
-        if (DriverManager.getDriver() != null) {
-            logger.info("Closing mobile driver session...");
-            DriverManager.getDriver().quit();
-            DriverManager.unload();
-            logger.info("Driver session closed");
-        } else {
-            logger.warn("Driver already null during teardown");
-        }
-
+        DriverManager.quit();
         logger.info("========== TEST END ==========\n");
     }
 }

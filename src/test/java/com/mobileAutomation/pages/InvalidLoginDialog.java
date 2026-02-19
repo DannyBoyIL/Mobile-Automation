@@ -19,6 +19,14 @@ public class InvalidLoginDialog extends BasePage {
     }
 
     public void accept() {
-        click(okButton);
+        if (!isVisible()) {
+            logger.info("Invalid login alert not visible");
+            return;
+        }
+        try {
+            click(okButton);
+        } catch (Exception e) {
+            logger.warn("Failed to click invalid login OK button (likely auto-dismissed)", e);
+        }
     }
 }

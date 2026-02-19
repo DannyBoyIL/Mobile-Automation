@@ -14,11 +14,10 @@ import java.net.URL;
 
 public class DriverFactory {
 
-    // TODO remove or change for the parallel jobs
     private static final String APPIUM_URL = "http://localhost:4723";
 
     public static AppiumDriver createDriver() {
-        Platform platform = Platform.fromString(System.getProperty("platform"));
+         Platform platform = Platform.fromString(System.getProperty("platform"));
 
         try {
             return switch (platform) {

@@ -1,0 +1,43 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Mobile Parallel Suite" parallel="tests" thread-count="3">
+
+<!--    <listeners>-->
+<!--        <listener class-name="io.qameta.allure.testng.AllureTestNg"/>-->
+<!--    </listeners>-->
+
+    <!-- ANDROID -->
+    <test name="Android Emulator">
+        <parameter name="platform" value="android"/>
+        <parameter name="udid" value="emulator-5554"/>
+        <parameter name="systemPort" value="8200"/>
+        <parameter name="appiumPort" value="10000"/>
+
+        <classes>
+            <class name="com.mobileAutomation.runners.AndroidRunner"/>
+        </classes>
+    </test>
+
+    <!-- IOS DEVICE 1 -->
+    <test name="iPhone 16e">
+        <parameter name="platform" value="ios"/>
+        <parameter name="udid" value="D8BFDD68-051C-4AFF-92CC-815F9E679D03"/>
+        <parameter name="wdaLocalPort" value="8100"/>
+        <parameter name="appiumPort" value="10001"/>
+
+        <classes>
+            <class name="com.mobileAutomation.runners.IOSRunner"/>
+        </classes>
+    </test>
+
+    <!-- IOS DEVICE 2 -->
+    <test name="iPhone 17">
+        <parameter name="platform" value="ios"/>
+        <parameter name="udid" value="9C39B053-DAB4-47D3-8B40-1761557A9083"/>
+        <parameter name="wdaLocalPort" value="8101"/>
+        <parameter name="appiumPort" value="10002"/>
+        <classes>
+            <class name="com.mobileAutomation.runners.IOSRunner"/>
+        </classes>
+    </test>
+
+</suite>

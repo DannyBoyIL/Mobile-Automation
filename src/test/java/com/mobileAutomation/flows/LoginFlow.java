@@ -39,6 +39,11 @@ public class LoginFlow {
             return new LoginResult.Success(secret);
         }
 
+        if (loginPage.isVisible()) {
+            logger.warn("FLOW RESULT: Still on login page after submit");
+            return new LoginResult.Invalid(dialog);
+        }
+
         logger.error("FLOW ERROR: App reached unknown state after login");
         throw new IllegalStateException("Unknown state after login");
     }
