@@ -56,6 +56,11 @@ public class DriverFactory {
         options.setCapability("appium:platformVersion", config.platformVersion);
         options.setCapability("appium:app", System.getProperty("user.dir") + config.app);
 
+        // CI capabilities
+        options.setCapability("appium:wdaLaunchTimeout", 180000);
+        options.setCapability("appium:wdaStartupRetries", 2);
+        options.setCapability("appium:wdaStartupRetryInterval", 20000);
+
         options.setCapability("noReset", false);
         options.setCapability("fullReset", false);
 
