@@ -83,7 +83,7 @@ jobs:
             adb shell settings put global verifier_verify_adb_installs 0
             adb shell settings put global package_verifier_enable 0
             echo "Pre-installing UiAutomator2 server and app..."
-            bash -lc 'set -e; UIA2_DIR="$HOME/.appium/node_modules/appium-uiautomator2-driver/node_modules/appium-uiautomator2-server/apks"; if [ ! -d "$UIA2_DIR" ]; then UIA2_DIR="$(find "$HOME" -type d -path "*appium-uiautomator2-server*/apks" | head -n 1)"; fi; UIA2_APK="$(ls -1 "$UIA2_DIR"/appium-uiautomator2-server-*.apk | head -n 1)"; UIA2_TEST_APK="$(ls -1 "$UIA2_DIR"/appium-uiautomator2-server-*-test.apk | head -n 1)"; echo "UIA2_DIR=$UIA2_DIR"; echo "UIA2_APK=$UIA2_APK"; echo "UIA2_TEST_APK=$UIA2_TEST_APK"; adb install -r -g "$UIA2_APK"; adb install -r -g "$UIA2_TEST_APK"; adb install -r -g apps/android/TheApp.apk'
+            bash -lc 'set -e; UIA2_DIR="$HOME/.appium/node_modules/appium-uiautomator2-driver/node_modules/appium-uiautomator2-server/apks"; if [ ! -d "$UIA2_DIR" ]; then UIA2_DIR="$(find "$HOME" -type d -path "*appium-uiautomator2-server*/apks" | head -n 1)"; fi; UIA2_TEST_APK="$(ls -1 "$UIA2_DIR"/*-androidTest.apk 2>/dev/null | head -n 1)"; UIA2_APK="$(ls -1 "$UIA2_DIR"/*.apk 2>/dev/null | grep -v androidTest | head -n 1)"; echo "UIA2_DIR=$UIA2_DIR"; echo "UIA2_APK=$UIA2_APK"; echo "UIA2_TEST_APK=$UIA2_TEST_APK"; if [ -z "$UIA2_APK" ]; then echo "UiAutomator2 server apk not found"; exit 1; fi; adb install -r -g "$UIA2_APK"; if [ -n "$UIA2_TEST_APK" ]; then adb install -r -g "$UIA2_TEST_APK"; fi; adb install -r -g apps/android/TheApp.apk'
             appium --log-level warn --port 4723 --session-override > appium.log 2>&1 &
             sleep 5
             mvn test -Dplatform=${PLATFORM}
