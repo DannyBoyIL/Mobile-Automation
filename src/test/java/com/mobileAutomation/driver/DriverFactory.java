@@ -41,7 +41,9 @@ public class DriverFactory {
                 .setDisableSuppressAccessibilityService(true)
                 .setDisableWindowAnimation(true)
                 .setAutoGrantPermissions(true)
-                .amend("disableAutofill", true);
+                .amend("disableAutofill", true)
+                .amend("uiautomator2ServerInstallTimeout", 120000)
+                .amend("adbExecTimeout", 120000);
 
         return new AndroidDriver(new URL(APPIUM_URL), options);
     }
