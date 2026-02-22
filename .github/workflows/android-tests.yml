@@ -1,0 +1,78 @@
+# This workflow will build a Java project with Maven and cache/restore any dependencies to improve the workflow execution time
+# For more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that GitHub does not certify.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Appium Android Tests
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  android-tests:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      PLATFORM: android
+      ANDROID_DEVICE_NAME: Android Emulator
+      ANDROID_PLATFORM_VERSION: "14"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Align Android Config For CI
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("src/test/resources/config/android.json")
+          data = json.loads(path.read_text())
+          data["deviceName"] = "${{ env.ANDROID_DEVICE_NAME }}"
+          data["platformVersion"] = "${{ env.ANDROID_PLATFORM_VERSION }}"
+          path.write_text(json.dumps(data, indent=4) + "\n")
+          print("Updated android.json:", data)
+          PY
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Appium
+        run: |
+          npm install -g appium
+          appium driver install uiautomator2
+
+      - name: Run Android Emulator and Tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          profile: pixel_6
+          emulator-options: -no-window -no-audio -no-snapshot -no-boot-anim
+          script: |
+            echo "Waiting for emulator boot..."
+            adb wait-for-device
+            adb shell 'while [[ "$(getprop sys.boot_completed)" != "1" ]]; do sleep 2; done;'
+            adb shell 'while [[ "$(getprop init.svc.bootanim)" != "stopped" ]]; do sleep 2; done;'
+            appium --log-level warn --port 4723 --session-override > appium.log 2>&1 &
+            sleep 5
+            mvn test -Dplatform=${PLATFORM}
+
+      - name: Upload Appium Log (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: appium-android-log
+          path: appium.log
