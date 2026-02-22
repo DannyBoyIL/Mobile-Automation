@@ -43,7 +43,12 @@ public class DriverFactory {
                 .setAutoGrantPermissions(true)
                 .amend("disableAutofill", true)
                 .amend("uiautomator2ServerInstallTimeout", 120000)
-                .amend("adbExecTimeout", 120000);
+                .amend("adbExecTimeout", 120000)
+                .amend("androidInstallTimeout", 180000)
+                .amend("uiautomator2ServerLaunchTimeout", 120000)
+                .amend("skipServerInstallation", true)
+                .amend("skipDeviceInitialization", true)
+                .amend("skipInstall", true);
 
         return new AndroidDriver(new URL(APPIUM_URL), options);
     }

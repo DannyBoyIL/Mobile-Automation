@@ -74,6 +74,13 @@ jobs:
             timeout 300 bash -c 'until adb shell getprop init.svc.bootanim 2>/dev/null | grep -q stopped; do sleep 2; done'
             adb shell settings put global verifier_verify_adb_installs 0
             adb shell settings put global package_verifier_enable 0
+            echo "Pre-installing UiAutomator2 server and app..."
+            APPIUM_ROOT="$(npm root -g)/appium"
+            UIA2_APK="$(ls -1 $APPIUM_ROOT/node_modules/appium-uiautomator2-driver/node_modules/appium-uiautomator2-server/apks/appium-uiautomator2-server-*.apk | head -n 1)"
+            UIA2_TEST_APK="$(ls -1 $APPIUM_ROOT/node_modules/appium-uiautomator2-driver/node_modules/appium-uiautomator2-server/apks/appium-uiautomator2-server-*-test.apk | head -n 1)"
+            adb install -r -g "$UIA2_APK"
+            adb install -r -g "$UIA2_TEST_APK"
+            adb install -r -g apps/android/TheApp.apk
             appium --log-level warn --port 4723 --session-override > appium.log 2>&1 &
             sleep 5
             mvn test -Dplatform=${PLATFORM}
