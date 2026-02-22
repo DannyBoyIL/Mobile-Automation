@@ -24,6 +24,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Runner Diagnostics
+        run: |
+          uname -a
+          lscpu
+
       - name: Align Android Config For CI
         run: |
           python - <<'PY'
@@ -64,8 +69,9 @@ jobs:
           script: |
             echo "Waiting for emulator boot..."
             adb wait-for-device
-            adb shell 'while [[ "$(getprop sys.boot_completed)" != "1" ]]; do sleep 2; done;'
-            adb shell 'while [[ "$(getprop init.svc.bootanim)" != "stopped" ]]; do sleep 2; done;'
+            # Sometimes the emulator is "offline" briefly; tolerate and retry.
+            timeout 300 bash -c 'until adb shell getprop sys.boot_completed 2>/dev/null | grep -q 1; do sleep 2; done'
+            timeout 300 bash -c 'until adb shell getprop init.svc.bootanim 2>/dev/null | grep -q stopped; do sleep 2; done'
             appium --log-level warn --port 4723 --session-override > appium.log 2>&1 &
             sleep 5
             mvn test -Dplatform=${PLATFORM}
