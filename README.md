@@ -1,7 +1,22 @@
 # Mobile Automation Framework (Java · Appium · TestNG · Cucumber)
-This automation project for mobile applications contains example code for the
-*Behavior-Driven Java with Cucumber, TestNG & Appium*.
+A portfolio-style mobile automation framework demonstrating production-grade structure, reporting, and stability patterns using a **realistic login flow** with multiple outcomes.
 
+## Feature Under Test
+**Login** is intentionally chosen because it is simple in scope but rich in behavior. This project validates **four scenarios**:
+* Valid credentials → user reaches the secret area and identity is verified.
+* Invalid credentials → error/alert is shown.
+* Wrong password → error/alert is shown.
+* Empty username → error/alert is shown.
+
+The result is a compact suite that still exercises synchronization, page flows, and robust assertions.
+
+## Highlights
+* **BDD with Cucumber** for business-readable scenarios.
+* **TestNG orchestration** with extensible runners.
+* **Page Object Model + flow orchestration** for clean separation of concerns.
+* **Allure reporting** for clear test insights.
+* **Structured logging** for traceability and debugging.
+* **CI pipelines** for iOS (macOS) and Android (Linux).
 
 ## Quick Start
 For users who want to run the project quickly:
@@ -37,21 +52,7 @@ mvn test -Dplatform=android
 allure serve allure-results
 ```
 
-
-## Repository Purpose
-This project serves as a comprehensive example of a modern mobile automation framework. It demonstrates a full end-to-end implementation of best practices used in professional QA automation, including:
-
-* __Page Object Model (POM)__ for clean, maintainable test architecture.
-* __Behaviour-Driven Development (BDD)__ using readable, business-oriented scenarios.
-* __TestNG runner integration__ for suite orchestration and reporting.
-* __CI/CD integration__ for automated test execution in pipelines.
-* __Allure Reporting__ for rich, visual test reports.
-* __Extensive logging__ to support debugging and traceability.
-* __Failure-proofing techniques__ to increase test stability and reduce flakiness.
-
-The repository provides reference implementations for all these components. Use this project as guidance when building or improving your own automation framework. Instead of copying code directly, explore the structure, patterns, and design decisions to understand how each part contributes to a scalable and robust automation setup.
-
-### Project Structure
+## Project Structure
 ```text
 mobile-automation/
 │
@@ -75,7 +76,6 @@ mobile-automation/
 ├── pom.xml
 └── README.md
 ```
-
 
 ## Java & Appium Setup
 This section documents how to set up your machine for Appium-based mobile test automation development.
@@ -124,7 +124,6 @@ emulator -version
 ```
 </details>
 
-
 ## Allure Setup
 Allure Reporting provides rich, visual test reports generated from your framework.
 <details> <summary><strong>Read more..</strong></summary>
@@ -157,12 +156,11 @@ allure serve allure-results
 This command builds the report and opens it in your browser.
 </details>
 
-
 ## Running Tests
 This project uses Maven, TestNG, and Cucumber to run the automation suite.
 
 ### Parallel Execution (Development Branch)
-<b>Parallel test execution is implemented on the `development` branch. If you want to use parallel runs, switch to that branch and follow the branch-specific README instructions.</b>
+**Parallel test execution is implemented on the `development` branch.** If you want parallel runs, switch to that branch and follow the branch-specific README instructions.
 
 ### iOS Execution
 Update iOS device config:
@@ -190,7 +188,6 @@ GitHub Actions workflows live under:
 .github/workflows/
 ```
 They run iOS on macOS runners and Android on Ubuntu runners.
-
 
 ## Troubleshooting
 A collection of common issues and quick fixes for running the mobile automation project.
