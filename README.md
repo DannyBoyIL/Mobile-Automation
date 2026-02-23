@@ -17,8 +17,8 @@ mvn -q -DskipTests install
 npm install -g appium
 appium driver install uiautomator2
 
-# 4. (Optional) Start Appium manually
-appium --log-level warn --port 4723
+# 4. Start Appium manually
+appium --log-level warn
 ```
 Run tests on iOS:
 ```bash
@@ -55,25 +55,35 @@ The repository provides reference implementations for all these components. Use 
 ```text
 mobile-automation/
 │
-├── apps/                               # Demo apps (iOS/Android)
-├── logs/                               # Local logs (if enabled)
-├── allure-results/                     # Allure result files
-├── src/test/resources/
-│   ├── features/                       # BDD .feature files
-│   └── config/                         # Device configs (android.json, ios.json)
-├── src/test/java/com/mobileAutomation/
-│   ├── pages/                          # Page Object Model
-│   ├── flows/                          # Flow orchestration
-│   ├── steps/                          # Cucumber step definitions
-│   ├── hooks/                          # Cucumber hooks
-│   ├── runners/                        # TestNG runners
-│   ├── driver/                         # Driver factory and manager
-│   ├── config/                         # Config loaders
-│   └── assertions/                     # Custom assertions
-│
+├── .github/                                # CI/CD configuration
+│   └── workflows/                          # CI pipelines
+├── allure-results/                         # Allure result files
+├── apps/                                   # Demo apps (iOS/Android)
+│   ├── android/
+│   └── ios/
+├── logs/                                   # Local logs (if enabled)
+├── src/
+│   ├── main/
+│   └── test/
+│       ├── java/
+│       │   └── com/mobileAutomation/
+│       │       ├── assertions/             # Custom assertions
+│       │       ├── config/                 # Config loaders
+│       │       ├── driver/                 # Driver factory and manager
+│       │       ├── flows/                  # Flow orchestration
+│       │       ├── hooks/                  # Cucumber hooks
+│       │       ├── pages/                  # Page Object Model
+│       │       ├── runners/                # TestNG runners
+│       │       └── steps/                  # Cucumber step definitions
+│       └── resources/
+│           ├── config/                     # Device configs
+│           ├── features/                   # BDD .feature files
+│           ├── logback-test.xml            # Logging config (tests)
+│           ├── testng-mobile-parallel.xml  # TestNG config for parallel execution
+│           └── users-data.json             # Test data
+├── .gitignore
 ├── pom.xml
-├── README.md
-└── .github/workflows/                  # CI pipelines
+└── README.md
 ```
 
 
@@ -161,9 +171,6 @@ This command builds the report and opens it in your browser.
 ## Running Tests
 This project uses Maven, TestNG, and Cucumber to run the automation suite.
 
-### Parallel Execution (Development Branch)
-<b>Parallel test execution is implemented on the `development` branch. If you want to use parallel runs, switch to that branch and follow the branch-specific README instructions.</b>
-
 ### iOS Execution
 Update iOS device config:
 ```bash
@@ -183,6 +190,25 @@ Run:
 ```bash
 mvn test -Dplatform=android
 ```
+
+### Parallel Execution
+Parallel execution uses the `mobile-parallel` Maven profile, which runs the suite defined in `src/test/resources/testng-mobile-parallel.xml`.
+
+Before running in parallel, start one Appium server per device. The current parallel setup expects multiple servers on ports `10000`, `10001`, `10002`.
+
+Example (3 servers):
+```bash
+appium --port 10000 &
+appium --port 10001 &
+appium --port 10002
+```
+
+Run parallel iOS:
+```bash
+mvn test -Pmobile-parallel
+```
+
+Note: `src/test/resources/testng-mobile-parallel.xml` defines how devices are distributed across threads. Update that file to add or remove devices, and make sure each device is mapped to a unique Appium port.
 
 ### CI Execution
 GitHub Actions workflows live under:
@@ -224,6 +250,11 @@ __Fix__:
 xcrun simctl boot "<device-name>" || true
 xcrun simctl bootstatus "<device-name>" -b
 ```
+
+__Where to find WDA logs__:
+* Local Appium logs: `logs/appium-test.log` (if enabled)
+* CI Appium logs: uploaded as workflow artifacts when a job fails
+* Simulator system logs: `Console.app` → filter by `WebDriverAgent` or `XCTest`
 
 ### Allure Report Empty
 __Symptom__: Allure opens a report with 0 tests.
