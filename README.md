@@ -55,25 +55,25 @@ The repository provides reference implementations for all these components. Use 
 ```text
 mobile-automation/
 │
+├── .github/workflows/                  # CI pipelines
 ├── apps/                               # Demo apps (iOS/Android)
-├── logs/                               # Local logs (if enabled)
 ├── allure-results/                     # Allure result files
-├── src/test/resources/
-│   ├── features/                       # BDD .feature files
-│   └── config/                         # Device configs (android.json, ios.json)
+├── logs/                               # Local logs (if enabled)
 ├── src/test/java/com/mobileAutomation/
-│   ├── pages/                          # Page Object Model
-│   ├── flows/                          # Flow orchestration
-│   ├── steps/                          # Cucumber step definitions
-│   ├── hooks/                          # Cucumber hooks
-│   ├── runners/                        # TestNG runners
-│   ├── driver/                         # Driver factory and manager
+│   ├── assertions/                     # Custom assertions
 │   ├── config/                         # Config loaders
-│   └── assertions/                     # Custom assertions
+│   ├── driver/                         # Driver factory and manager
+│   ├── flows/                          # Flow orchestration
+│   ├── hooks/                          # Cucumber hooks
+│   ├── pages/                          # Page Object Model
+│   ├── runners/                        # TestNG runners
+│   └── steps/                          # Cucumber step definitions
+├── src/test/resources/
+│   ├── config/                         # Device configs (android.json, ios.json)
+│   └── features/                       # BDD .feature files
 │
 ├── pom.xml
-├── README.md
-└── .github/workflows/                  # CI pipelines
+└── README.md
 ```
 
 
