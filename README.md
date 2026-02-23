@@ -1,7 +1,31 @@
 # Mobile Automation Framework (Java · Appium · TestNG · Cucumber)
-This automation project for mobile applications contains example code for the
-*Behavior-Driven Java with Cucumber, TestNG & Appium*.
+A portfolio-style mobile automation framework demonstrating production-grade structure, reporting, and stability patterns using a **realistic login flow** with multiple outcomes.
 
+This project serves as a comprehensive example of a modern mobile automation framework. It demonstrates a full end-to-end implementation of best practices used in professional QA automation.
+
+## Feature Under Test
+**Login** is intentionally chosen because it is simple in scope but rich in behavior. This project validates **four scenarios**:
+* Valid credentials → user reaches the secret area and identity is verified.
+* Invalid credentials → error/alert is shown.
+* Wrong password → error/alert is shown.
+* Empty username → error/alert is shown.
+
+The result is a compact suite that still exercises synchronization, page flows, and robust assertions.
+
+## Highlights
+* **Page Object Model + flow orchestration** for clean separation of concerns, and maintainable test architecture.
+* **Behaviour-Driven Development (BDD) with Cucumber** for readable, business-readable scenarios.
+* **TestNG orchestration** with extensible runners.
+* **CI/CD integration** for automated test execution in pipelines for iOS (macOS) and Android (Linux).
+* **Allure reporting** for clear test insights.
+* **Structured logging** for traceability and debugging.
+* **Failure-proofing techniques** to increase test stability and reduce flakiness.
+* **Defensive UI handling** for variable login outcomes (alerts, invalid states).
+* **Extensible configuration** via JSON device profiles.
+* **Modular design** with POM + flows + steps.
+* **Parallel execution** *(available on the `development` branch)*.
+
+The repository provides reference implementations for all these components. Use this project as guidance when building or improving your own automation framework. Instead of copying code directly, explore the structure, patterns, and design decisions to understand how each part contributes to a scalable and robust automation setup.
 
 ## Quick Start
 For users who want to run the project quickly:
@@ -37,21 +61,7 @@ mvn test -Dplatform=android
 allure serve allure-results
 ```
 
-
-## Repository Purpose
-This project serves as a comprehensive example of a modern mobile automation framework. It demonstrates a full end-to-end implementation of best practices used in professional QA automation, including:
-
-* __Page Object Model (POM)__ for clean, maintainable test architecture.
-* __Behaviour-Driven Development (BDD)__ using readable, business-oriented scenarios.
-* __TestNG runner integration__ for suite orchestration and reporting.
-* __CI/CD integration__ for automated test execution in pipelines.
-* __Allure Reporting__ for rich, visual test reports.
-* __Extensive logging__ to support debugging and traceability.
-* __Failure-proofing techniques__ to increase test stability and reduce flakiness.
-
-The repository provides reference implementations for all these components. Use this project as guidance when building or improving your own automation framework. Instead of copying code directly, explore the structure, patterns, and design decisions to understand how each part contributes to a scalable and robust automation setup.
-
-### Project Structure
+## Project Structure
 ```text
 mobile-automation/
 │
@@ -80,7 +90,6 @@ mobile-automation/
 ├── pom.xml
 └── README.md
 ```
-
 
 ## Java & Appium Setup
 This section documents how to set up your machine for Appium-based mobile test automation development.
@@ -129,7 +138,6 @@ emulator -version
 ```
 </details>
 
-
 ## Allure Setup
 Allure Reporting provides rich, visual test reports generated from your framework.
 <details> <summary><strong>Read more..</strong></summary>
@@ -161,7 +169,6 @@ allure serve allure-results
 ```
 This command builds the report and opens it in your browser.
 </details>
-
 
 ## Running Tests
 This project uses Maven, TestNG, and Cucumber to run the automation suite.
@@ -211,7 +218,6 @@ GitHub Actions workflows live under:
 .github/workflows/
 ```
 They run iOS on macOS runners and Android on Ubuntu runners.
-
 
 ## Troubleshooting
 A collection of common issues and quick fixes for running the mobile automation project.
