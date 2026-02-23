@@ -55,9 +55,8 @@ The repository provides reference implementations for all these components. Use 
 ```text
 mobile-automation/
 │
-├── .github/                                # CI/CD configuration
+├── .github/                                
 │   └── workflows/                          # CI pipelines
-├── allure-results/                         # Allure result files
 ├── apps/                                   # Demo apps (iOS/Android)
 │   ├── android/
 │   └── ios/
@@ -81,7 +80,6 @@ mobile-automation/
 │           ├── logback-test.xml            # Logging config (tests)
 │           ├── testng-mobile-parallel.xml  # TestNG config for parallel execution
 │           └── users-data.json             # Test data
-├── .gitignore
 ├── pom.xml
 └── README.md
 ```
