@@ -55,31 +55,28 @@ The repository provides reference implementations for all these components. Use 
 ```text
 mobile-automation/
 │
-├── .github/                                
-│   └── workflows/                          # CI pipelines
-├── apps/                                   # Demo apps (iOS/Android)
+├── .github/workflows/                  # CI pipelines
+├── apps/                               # Demo apps (iOS/Android)
 │   ├── android/
 │   └── ios/
-├── logs/                                   # Local logs (if enabled)
-├── src/
-│   ├── main/
-│   └── test/
-│       ├── java/
-│       │   └── com/mobileAutomation/
-│       │       ├── assertions/             # Custom assertions
-│       │       ├── config/                 # Config loaders
-│       │       ├── driver/                 # Driver factory and manager
-│       │       ├── flows/                  # Flow orchestration
-│       │       ├── hooks/                  # Cucumber hooks
-│       │       ├── pages/                  # Page Object Model
-│       │       ├── runners/                # TestNG runners
-│       │       └── steps/                  # Cucumber step definitions
-│       └── resources/
-│           ├── config/                     # Device configs
-│           ├── features/                   # BDD .feature files
-│           ├── logback-test.xml            # Logging config (tests)
-│           ├── testng-mobile-parallel.xml  # TestNG config for parallel execution
-│           └── users-data.json             # Test data
+├── allure-results/                     # Allure result files
+├── logs/                               # Local logs (if enabled)
+├── src/test/java/com/mobileAutomation/
+│   ├── assertions/                     # Custom assertions
+│   ├── config/                         # Config loaders
+│   ├── driver/                         # Driver factory and manager
+│   ├── flows/                          # Flow orchestration
+│   ├── hooks/                          # Cucumber hooks
+│   ├── pages/                          # Page Object Model
+│   ├── runners/                        # TestNG runners
+│   └── steps/                          # Cucumber step definitions
+├── src/test/resources/
+│   ├── config/                         # Device configs (android.json, ios.json)
+│   ├── features/                       # BDD .feature files
+│   ├── logback-test.xml                # Logging config (tests)
+│   ├── testng-mobile-parallel.xml      # TestNG config for parallel execution
+│   └── users-data.json                 # Test data
+│
 ├── pom.xml
 └── README.md
 ```
