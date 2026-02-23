@@ -1,6 +1,8 @@
 # Mobile Automation Framework (Java · Appium · TestNG · Cucumber)
 A portfolio-style mobile automation framework demonstrating production-grade structure, reporting, and stability patterns using a **realistic login flow** with multiple outcomes.
 
+This project serves as a comprehensive example of a modern mobile automation framework. It demonstrates a full end-to-end implementation of best practices used in professional QA automation.
+
 ## Feature Under Test
 **Login** is intentionally chosen because it is simple in scope but rich in behavior. This project validates **four scenarios**:
 * Valid credentials → user reaches the secret area and identity is verified.
@@ -11,12 +13,19 @@ A portfolio-style mobile automation framework demonstrating production-grade str
 The result is a compact suite that still exercises synchronization, page flows, and robust assertions.
 
 ## Highlights
-* **BDD with Cucumber** for business-readable scenarios.
+* **Page Object Model + flow orchestration** for clean separation of concerns, and maintainable test architecture.
+* **Behaviour-Driven Development (BDD) with Cucumber** for readable, business-readable scenarios.
 * **TestNG orchestration** with extensible runners.
-* **Page Object Model + flow orchestration** for clean separation of concerns.
+* **CI/CD integration** for automated test execution in pipelines for iOS (macOS) and Android (Linux).
 * **Allure reporting** for clear test insights.
 * **Structured logging** for traceability and debugging.
-* **CI pipelines** for iOS (macOS) and Android (Linux).
+* **Failure-proofing techniques** to increase test stability and reduce flakiness.
+* **Defensive UI handling** for variable login outcomes (alerts, invalid states).
+* **Extensible configuration** via JSON device profiles.
+* **Modular design** with POM + flows + steps.
+* **Parallel execution** *(available on the `development` branch)*.
+
+The repository provides reference implementations for all these components. Use this project as guidance when building or improving your own automation framework. Instead of copying code directly, explore the structure, patterns, and design decisions to understand how each part contributes to a scalable and robust automation setup.
 
 ## Quick Start
 For users who want to run the project quickly:
