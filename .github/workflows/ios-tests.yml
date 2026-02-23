@@ -21,6 +21,7 @@ jobs:
       PLATFORM: ios
       IOS_PLATFORM_VERSION: "17.5"
       CI_SINGLE_SESSION: "true"
+      WDA_DERIVED_DATA: /Users/runner/wda-derived-data
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -59,6 +60,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Cache WDA DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WDA_DERIVED_DATA }}
+          key: wda-deriveddata-${{ runner.os }}-${{ env.IOS_PLATFORM_VERSION }}-xcuitest-10.24.1
+          restore-keys: |
+            wda-deriveddata-${{ runner.os }}-${{ env.IOS_PLATFORM_VERSION }}-
+            wda-deriveddata-${{ runner.os }}-
 
       - name: Install Appium
         run: |
