@@ -17,8 +17,8 @@ mvn -q -DskipTests install
 npm install -g appium
 appium driver install uiautomator2
 
-# 4. (Optional) Start Appium manually
-appium --log-level warn --port 4723
+# 4. Start Appium manually
+appium --log-level warn
 ```
 Run tests on iOS:
 ```bash
