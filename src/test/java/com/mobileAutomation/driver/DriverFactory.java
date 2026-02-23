@@ -40,7 +40,14 @@ public class DriverFactory {
                 .setDisableSuppressAccessibilityService(true)
                 .setDisableWindowAnimation(true)
                 .setAutoGrantPermissions(true)
-                .amend("disableAutofill", true);
+                .amend("disableAutofill", true)
+                .amend("uiautomator2ServerInstallTimeout", 120000)
+                .amend("adbExecTimeout", 120000)
+                .amend("androidInstallTimeout", 180000)
+                .amend("uiautomator2ServerLaunchTimeout", 120000)
+                .amend("skipServerInstallation", true)
+                .amend("skipDeviceInitialization", true)
+                .amend("skipInstall", true);
 
         return new AndroidDriver(new URL(APPIUM_URL), options);
     }
@@ -54,6 +61,11 @@ public class DriverFactory {
         options.setCapability("appium:deviceName", config.deviceName);
         options.setCapability("appium:platformVersion", config.platformVersion);
         options.setCapability("appium:app", System.getProperty("user.dir") + config.app);
+
+        // CI capabilities
+        options.setCapability("appium:wdaLaunchTimeout", 180000);
+        options.setCapability("appium:wdaStartupRetries", 2);
+        options.setCapability("appium:wdaStartupRetryInterval", 20000);
 
         options.setCapability("noReset", false);
         options.setCapability("fullReset", false);
