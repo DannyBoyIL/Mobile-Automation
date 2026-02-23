@@ -55,7 +55,6 @@ public class DriverFactory {
 
     private static AppiumDriver createIOSDriver() throws MalformedURLException {
         IOSConfig config = DeviceConfig.load("ios.json", IOSConfig.class);
-        String simUdid = System.getenv("SIM_UDID");
         boolean ciSingleSession = "true".equalsIgnoreCase(System.getenv("CI_SINGLE_SESSION"));
 
         DesiredCapabilities options = new DesiredCapabilities();
@@ -65,10 +64,6 @@ public class DriverFactory {
         options.setCapability("appium:platformVersion", config.platformVersion);
         options.setCapability("appium:app", System.getProperty("user.dir") + config.app);
         options.setCapability("appium:bundleId", config.bundleId);
-
-        if (simUdid != null && !simUdid.isBlank()) {
-            options.setCapability("appium:udid", simUdid);
-        }
 
         // CI capabilities
         options.setCapability("appium:wdaLaunchTimeout", 180000);
