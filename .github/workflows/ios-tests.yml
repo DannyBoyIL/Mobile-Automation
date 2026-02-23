@@ -67,15 +67,23 @@ jobs:
 
       - name: Boot iOS Simulator
         run: |
-          # Resolve a single simulator UDID to avoid matching multiple devices by name.
+          # Resolve a single simulator UDID by exact device + iOS runtime version.
           SIM_UDID=$(
-            xcrun simctl list devices available \
-            | grep -F "${SIM_DEVICE} (" \
-            | head -n 1 \
-            | sed -E 's/.*\(([0-9A-F-]{36})\).*/\1/'
+            xcrun simctl list devices available | awk -v dev="${SIM_DEVICE}" -v ver="${IOS_PLATFORM_VERSION}" '
+              /^-- iOS / {
+                in_runtime = ($0 ~ ("^-- iOS " ver " --$"))
+                next
+              }
+              in_runtime && $0 ~ (dev " \\(") {
+                if (match($0, /\(([0-9A-F-]{36})\)/)) {
+                  print substr($0, RSTART + 1, RLENGTH - 2)
+                  exit
+                }
+              }
+            '
           )
           if [ -z "${SIM_UDID}" ]; then
-            echo "Failed to resolve UDID for ${SIM_DEVICE}"
+            echo "Failed to resolve UDID for ${SIM_DEVICE} on iOS ${IOS_PLATFORM_VERSION}"
             xcrun simctl list devices available
             exit 1
           fi
@@ -87,7 +95,14 @@ jobs:
       - name: Start Appium Server
         run: |
           appium --log-level warn --port 4723 > appium.log 2>&1 &
-          sleep 5
+          for i in {1..20}; do
+            if curl -sf http://127.0.0.1:4723/status >/dev/null; then
+              echo "Appium is ready"
+              break
+            fi
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:4723/status >/dev/null
 
       - name: Run iOS Tests
         run: mvn test -Dplatform=${PLATFORM}

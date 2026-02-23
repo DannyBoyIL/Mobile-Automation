@@ -68,8 +68,10 @@ public class DriverFactory {
 
         // CI capabilities
         options.setCapability("appium:wdaLaunchTimeout", 180000);
+        options.setCapability("appium:wdaConnectionTimeout", 240000);
         options.setCapability("appium:wdaStartupRetries", 2);
         options.setCapability("appium:wdaStartupRetryInterval", 20000);
+        options.setCapability("appium:shouldUseSingletonTestManager", false);
         options.setCapability("appium:useNewWDA", false);
         if (simUdid != null && !simUdid.isBlank()) {
             options.setCapability("appium:udid", simUdid);
