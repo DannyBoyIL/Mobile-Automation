@@ -23,7 +23,7 @@ The result is a compact suite that still exercises synchronization, page flows, 
 * **Defensive UI handling** for variable login outcomes (alerts, invalid states).
 * **Extensible configuration** via JSON device profiles.
 * **Modular design** with POM + flows + steps.
-* **Parallel execution** *(available on the `development` branch)*.
+* **Parallel execution** via TestNG suite and multi‑Appium server setup.
 
 The repository provides reference implementations for all these components. Use this project as guidance when building or improving your own automation framework. Instead of copying code directly, explore the structure, patterns, and design decisions to understand how each part contributes to a scalable and robust automation setup.
 
