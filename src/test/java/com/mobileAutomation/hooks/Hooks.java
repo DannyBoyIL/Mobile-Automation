@@ -1,8 +1,11 @@
 package com.mobileAutomation.hooks;
 
+import com.mobileAutomation.config.DeviceConfig;
+import com.mobileAutomation.config.IOSConfig;
 import com.mobileAutomation.driver.DriverFactory;
 import com.mobileAutomation.driver.DriverManager;
 import io.cucumber.java.After;
+import io.cucumber.java.AfterAll;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Before;
 import io.cucumber.java.Scenario;
@@ -12,10 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.util.Map;
 
 public class Hooks {
 
     private static final Logger logger = LoggerFactory.getLogger(Hooks.class);
+    private static final boolean CI_SINGLE_SESSION = "true".equalsIgnoreCase(System.getenv("CI_SINGLE_SESSION"));
+    private static String cachedIosBundleId;
 
     @Before
     public void setUp(Scenario scenario) {
@@ -29,6 +35,9 @@ public class Hooks {
             logger.info("Driver session created successfully");
         } else {
             logger.warn("Driver already exists! Reusing session");
+            if (shouldReuseSession()) {
+                activateIosAppIfNeeded();
+            }
         }
     }
 
@@ -83,14 +92,86 @@ public class Hooks {
         }
 
         if (DriverManager.getDriver() != null) {
-            logger.info("Closing mobile driver session...");
-            DriverManager.getDriver().quit();
-            DriverManager.unload();
-            logger.info("Driver session closed");
+            if (shouldReuseSession()) {
+                logger.info("Reusing session (CI iOS). Resetting app state...");
+                resetIosAppState();
+            } else {
+                logger.info("Closing mobile driver session...");
+                DriverManager.getDriver().quit();
+                DriverManager.unload();
+                logger.info("Driver session closed");
+            }
         } else {
             logger.warn("Driver already null during teardown");
         }
 
         logger.info("========== TEST END ==========\n");
+    }
+
+    @AfterAll
+    public static void tearDownSuite() {
+        if (!shouldReuseSession()) {
+            return;
+        }
+        if (DriverManager.getDriver() == null) {
+            return;
+        }
+        try {
+            logger.info("Suite finished. Closing reused iOS driver session...");
+            DriverManager.getDriver().quit();
+            logger.info("Reused iOS driver session closed");
+        } catch (Exception e) {
+            logger.warn("Failed to close reused iOS session at suite end", e);
+        } finally {
+            DriverManager.unload();
+        }
+    }
+
+    private static boolean shouldReuseSession() {
+        return CI_SINGLE_SESSION && isIosPlatform();
+    }
+
+    private static boolean isIosPlatform() {
+        String platform = System.getProperty("platform");
+        if (platform == null || platform.isBlank()) {
+            platform = System.getenv("PLATFORM");
+        }
+        return platform != null && platform.equalsIgnoreCase("ios");
+    }
+
+    private static String iosBundleId() {
+        if (cachedIosBundleId != null) {
+            return cachedIosBundleId;
+        }
+        IOSConfig config = DeviceConfig.load("ios.json", IOSConfig.class);
+        cachedIosBundleId = config.bundleId;
+        return cachedIosBundleId;
+    }
+
+    private static void activateIosAppIfNeeded() {
+        try {
+            String bundleId = iosBundleId();
+            if (bundleId == null || bundleId.isBlank()) {
+                logger.warn("iOS bundleId not configured; cannot activate app");
+                return;
+            }
+            DriverManager.getDriver().executeScript("mobile: activateApp", Map.of("bundleId", bundleId));
+        } catch (Exception e) {
+            logger.warn("Failed to activate iOS app before scenario", e);
+        }
+    }
+
+    private static void resetIosAppState() {
+        try {
+            String bundleId = iosBundleId();
+            if (bundleId == null || bundleId.isBlank()) {
+                logger.warn("iOS bundleId not configured; cannot reset app");
+                return;
+            }
+            DriverManager.getDriver().executeScript("mobile: terminateApp", Map.of("bundleId", bundleId));
+            DriverManager.getDriver().executeScript("mobile: activateApp", Map.of("bundleId", bundleId));
+        } catch (Exception e) {
+            logger.warn("Failed to reset iOS app state", e);
+        }
     }
 }

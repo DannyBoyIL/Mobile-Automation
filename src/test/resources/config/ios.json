@@ -3,7 +3,8 @@
     "automationName": "XCUITest",
     "deviceName": "iPhone 16e",
     "platformVersion": "26.1",
-    "app": "/apps/ios/TheApp.app.zip"
+    "app": "/apps/ios/TheApp.app.zip",
+    "bundleId": "com.appiumpro.the_app"
 }
 
 //⚠️ Known issue:

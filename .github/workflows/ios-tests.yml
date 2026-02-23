@@ -20,6 +20,7 @@ jobs:
       SIM_DEVICE: "iPhone 15"
       PLATFORM: ios
       IOS_PLATFORM_VERSION: "17.5"
+      CI_SINGLE_SESSION: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v4

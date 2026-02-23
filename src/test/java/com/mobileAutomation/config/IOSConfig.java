@@ -6,4 +6,5 @@ public class IOSConfig {
     public String deviceName;
     public String platformVersion;
     public String app;
+    public String bundleId;
 }
