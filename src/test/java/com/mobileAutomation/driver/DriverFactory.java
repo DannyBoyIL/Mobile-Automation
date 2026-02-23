@@ -55,6 +55,7 @@ public class DriverFactory {
 
     private static AppiumDriver createIOSDriver() throws MalformedURLException {
         IOSConfig config = DeviceConfig.load("ios.json", IOSConfig.class);
+        String simUdid = System.getenv("SIM_UDID");
         boolean ciSingleSession = "true".equalsIgnoreCase(System.getenv("CI_SINGLE_SESSION"));
 
         DesiredCapabilities options = new DesiredCapabilities();
@@ -70,6 +71,9 @@ public class DriverFactory {
         options.setCapability("appium:wdaStartupRetries", 2);
         options.setCapability("appium:wdaStartupRetryInterval", 20000);
         options.setCapability("appium:useNewWDA", false);
+        if (simUdid != null && !simUdid.isBlank()) {
+            options.setCapability("appium:udid", simUdid);
+        }
 
         // Keep existing local behavior unless CI explicitly enables single-session mode.
         options.setCapability("appium:noReset", ciSingleSession);
