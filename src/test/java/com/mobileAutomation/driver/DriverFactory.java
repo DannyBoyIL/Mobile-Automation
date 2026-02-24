@@ -75,6 +75,10 @@ public class DriverFactory {
         options.setCapability("appium:shouldUseSingletonTestManager", false);
         options.setCapability("appium:useNewWDA", false);
 
+        if (ciSingleSession) {
+            options.setCapability("appium:usePrebuiltWDA", true);
+        }
+
         if (simUdid != null && !simUdid.isBlank()) {
             options.setCapability("appium:udid", simUdid);
         }
