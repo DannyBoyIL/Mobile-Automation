@@ -54,10 +54,11 @@ public class DriverFactory {
     }
 
     private static AppiumDriver createIOSDriver() throws MalformedURLException {
-        IOSConfig config = DeviceConfig.load("ios.json", IOSConfig.class);
         String simUdid = System.getenv("SIM_UDID");
         String derivedDataPath = System.getenv("WDA_DERIVED_DATA");
+        boolean prelaunchedWda = "true".equalsIgnoreCase(System.getenv("PRELAUNCHED_WDA"));
         boolean ciSingleSession = "true".equalsIgnoreCase(System.getenv("CI_SINGLE_SESSION"));
+        IOSConfig config = DeviceConfig.load("ios.json", IOSConfig.class);
 
         DesiredCapabilities options = new DesiredCapabilities();
         options.setCapability("platformName", config.platformName);
@@ -77,6 +78,10 @@ public class DriverFactory {
 
         if (ciSingleSession) {
             options.setCapability("appium:usePrebuiltWDA", true);
+        }
+
+        if (prelaunchedWda) {
+            options.setCapability("appium:webDriverAgentUrl", "http://127.0.0.1:8100");
         }
 
         if (simUdid != null && !simUdid.isBlank()) {
