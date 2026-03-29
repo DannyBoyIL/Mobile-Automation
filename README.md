@@ -2,13 +2,13 @@
 A portfolio-style mobile automation framework demonstrating production-grade structure, reporting, and stability patterns using a **realistic login flow** with multiple outcomes.
 
 ## Feature Under Test
-**Login** is intentionally chosen because it is simple in scope but rich in behavior. This project validates **four scenarios**:
+**Login** is intentionally chosen because it is simple in scope but rich in behaviour. This project validates **four scenarios**:
 * Valid credentials → user reaches the secret area and identity is verified.
 * Invalid credentials → error/alert is shown.
 * Wrong password → error/alert is shown.
 * Empty username → error/alert is shown.
 
-The result is a compact suite that still exercises synchronization, page flows, and robust assertions.
+The result is a compact suite that still exercises synchronisation, page flows, and robust assertions.
 
 ## Highlights
 * **Page Object Model + flow orchestration** for clean separation of concerns, and maintainable test architecture.
@@ -56,6 +56,45 @@ mvn test -Dplatform=android
 # Optional: generate Allure report
 allure serve allure-results
 ```
+
+## Example Test
+The following step definitions show the full login flow — success and failure paths — using the sealed interface pattern for typed outcomes:
+
+```java
+@When("the user logs in with username {string} and password {string}")
+public void login(String user, String pw) {
+    loginResult = loginFlow.login(user, pw);
+}
+
+@Then("the secret area should be displayed")
+public void secretArea() {
+    // LoginResult is a sealed interface — assertInstanceOf enforces the expected outcome type
+    LoginResult.Success success = assertInstanceOf(LoginResult.Success.class, loginResult);
+    secretPage = success.page();
+    Assert.assertTrue(secretPage.isVisible());
+}
+
+@And("the logged in user should be {string}")
+public void verifyUser(String username) {
+    Assert.assertTrue(
+        secretPage.loggedInUserText().contains(username),
+        "Expected username to be displayed"
+    );
+    secretPage.logOut();
+}
+
+@Then("an invalid login alert should be shown")
+public void invalidLogin() {
+    // Wrong outcome type at runtime = instant, descriptive failure
+    LoginResult.Invalid invalid = assertInstanceOf(LoginResult.Invalid.class, loginResult);
+    InvalidLoginDialog dialog = invalid.dialog();
+    Assert.assertTrue(dialog.isVisible());
+    dialog.accept();
+}
+```
+
+`LoginResult` is a Java 17 sealed interface with two permitted subtypes — `Success` and `Invalid`. If the app returns the wrong outcome, `assertInstanceOf` fails with a clear message naming both types, rather than a null pointer or a silent wrong-state assertion.
+
 
 ## Project Structure
 ```text
