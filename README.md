@@ -95,7 +95,6 @@ public void invalidLogin() {
 
 `LoginResult` is a Java 17 sealed interface with two permitted subtypes — `Success` and `Invalid`. If the app returns the wrong outcome, `assertInstanceOf` fails with a clear message naming both types, rather than a null pointer or a silent wrong-state assertion.
 
-
 ## Project Structure
 ```text
 mobile-automation/
