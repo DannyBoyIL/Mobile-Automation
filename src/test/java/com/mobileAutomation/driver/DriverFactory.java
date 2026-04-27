@@ -92,11 +92,18 @@ public class DriverFactory {
         // this setting).
         //
         // Forcing the software keyboard makes the behavior identical across models:
-        //   - connectHardwareKeyboard:false        — XCUITest sets the simulator
-        //     pref so the soft keyboard appears regardless of local default.
-        //   - forceTurnOnSoftwareKeyboard:true     — belt-and-suspenders for cases
-        //     where the prefs file got reset (Erase All Content & Settings, fresh
-        //     CI runner image, etc.).
+        //   - connectHardwareKeyboard:false                  — XCUITest sets the
+        //     simulator pref so the soft keyboard appears regardless of the
+        //     simulator's local default.
+        //   - forceSimulatorSoftwareKeyboardPresence:true    — belt-and-suspenders
+        //     for cases where the prefs file got reset (Erase All Content &
+        //     Settings, fresh CI runner image, etc.). NOTE: this is the canonical
+        //     XCUITest capability name. We previously used the (apparently
+        //     unrecognised) `forceTurnOnSoftwareKeyboard`; CI surfaced
+        //       "The following provided capabilities were not recognized by this
+        //        driver: forceTurnOnSoftwareKeyboard"
+        //     in the Appium log. The renamed cap is recognised by
+        //     appium-xcuitest-driver and actually applies the simulator pref.
         //
         // NOTE: do NOT set `appium:autoDismissAlerts:true` here. It races XCUITest's
         // alert monitor against the test's own alert assertions: on `@login @negative`
@@ -106,7 +113,7 @@ public class DriverFactory {
         // "Save Password / Not Now" autofill prompt ever does appear between typing
         // and submit, handle it explicitly at the LoginPage level instead.
         options.setCapability("appium:connectHardwareKeyboard", false);
-        options.setCapability("appium:forceTurnOnSoftwareKeyboard", true);
+        options.setCapability("appium:forceSimulatorSoftwareKeyboardPresence", true);
 
         // WebView discovery tuning. XCUITest defaults (10 retries × 5000ms) are often
         // tight for a cold-start simulator where WebKit's inspector takes a beat to

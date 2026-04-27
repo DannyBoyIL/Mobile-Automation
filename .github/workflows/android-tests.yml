@@ -97,9 +97,14 @@ jobs:
             # time, so @webview scenarios don't break when WebView updates ahead
             # of the chromedriver shipped with the driver. Appium 3.x requires
             # the prefixed feature name (the unprefixed form is rejected).
+            # The reactivecircus/android-emulator-runner script runs in a sub-shell
+            # whose cwd isn't guaranteed to be $GITHUB_WORKSPACE — in earlier runs
+            # the upload-artifact step couldn't find appium.log because it was
+            # written elsewhere. Pin the redirect to the workspace root so the
+            # log lands where the upload step looks for it.
             appium --log-level warn --port 4723 --session-override \
               --allow-insecure uiautomator2:chromedriver_autodownload \
-              > appium.log 2>&1 &
+              > "$GITHUB_WORKSPACE/appium.log" 2>&1 &
             sleep 5
             # `-Pcucumber` is required — see ios-tests.yml for why.
             mvn -Pcucumber test -Dplatform=${PLATFORM}
