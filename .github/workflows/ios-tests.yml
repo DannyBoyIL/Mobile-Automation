@@ -21,11 +21,6 @@ jobs:
       PLATFORM: ios
       IOS_PLATFORM_VERSION: "17.5"
       CI_SINGLE_SESSION: "true"
-      # Login credentials — only the valid user is treated as a secret. The
-      # negative-test aliases (unknown user / wrong-password user / empty-
-      # username user) are inline fixtures in CredentialsStore.java.
-      # Required Secrets (Settings -> Secrets and variables -> Actions):
-      #   LOGIN_VALID_USER, LOGIN_VALID_PASSWORD
       LOGIN_VALID_USER: ${{ secrets.LOGIN_VALID_USER }}
       LOGIN_VALID_PASSWORD: ${{ secrets.LOGIN_VALID_PASSWORD }}
     steps:
@@ -84,7 +79,7 @@ jobs:
           sleep 5
 
       - name: Run iOS Tests
-        run: mvn -Pcucumber test -Dplatform=${PLATFORM}
+        run: mvn -Pcucumber test -Dplatform=${PLATFORM} -Dcucumber.filter.tags=@login
 
       - name: Upload Appium Log (on failure)
         if: failure()

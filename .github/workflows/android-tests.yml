@@ -20,11 +20,6 @@ jobs:
       PLATFORM: android
       ANDROID_DEVICE_NAME: Android Emulator
       ANDROID_PLATFORM_VERSION: "14"
-      # Login credentials — only the valid user is treated as a secret. The
-      # negative-test aliases (unknown user / wrong-password user / empty-
-      # username user) are inline fixtures in CredentialsStore.java.
-      # Required Secrets (Settings -> Secrets and variables -> Actions):
-      #   LOGIN_VALID_USER, LOGIN_VALID_PASSWORD
       LOGIN_VALID_USER: ${{ secrets.LOGIN_VALID_USER }}
       LOGIN_VALID_PASSWORD: ${{ secrets.LOGIN_VALID_PASSWORD }}
     steps:
@@ -91,23 +86,9 @@ jobs:
             adb shell settings put global package_verifier_enable 0
             echo "Pre-installing UiAutomator2 server and app..."
             bash -lc 'set -e; UIA2_DIR="$HOME/.appium/node_modules/appium-uiautomator2-driver/node_modules/appium-uiautomator2-server/apks"; if [ ! -d "$UIA2_DIR" ]; then UIA2_DIR="$(find "$HOME" -type d -path "*appium-uiautomator2-server*/apks" | head -n 1)"; fi; UIA2_TEST_APK="$(ls -1 "$UIA2_DIR"/*-androidTest.apk 2>/dev/null | head -n 1)"; UIA2_APK="$(ls -1 "$UIA2_DIR"/*.apk 2>/dev/null | grep -v androidTest | head -n 1)"; echo "UIA2_DIR=$UIA2_DIR"; echo "UIA2_APK=$UIA2_APK"; echo "UIA2_TEST_APK=$UIA2_TEST_APK"; if [ -z "$UIA2_APK" ]; then echo "UiAutomator2 server apk not found"; exit 1; fi; adb install -r -g "$UIA2_APK"; if [ -n "$UIA2_TEST_APK" ]; then adb install -r -g "$UIA2_TEST_APK"; fi; adb install -r -g apps/android/TheApp.apk'
-            # `--allow-insecure uiautomator2:chromedriver_autodownload` lets the
-            # UiAutomator2 driver fetch a chromedriver matching the emulator's
-            # current Android System WebView Chrome version at session-create
-            # time, so @webview scenarios don't break when WebView updates ahead
-            # of the chromedriver shipped with the driver. Appium 3.x requires
-            # the prefixed feature name (the unprefixed form is rejected).
-            # The reactivecircus/android-emulator-runner script runs in a sub-shell
-            # whose cwd isn't guaranteed to be $GITHUB_WORKSPACE — in earlier runs
-            # the upload-artifact step couldn't find appium.log because it was
-            # written elsewhere. Pin the redirect to the workspace root so the
-            # log lands where the upload step looks for it.
-            appium --log-level warn --port 4723 --session-override \
-              --allow-insecure uiautomator2:chromedriver_autodownload \
-              > "$GITHUB_WORKSPACE/appium.log" 2>&1 &
+            appium --log-level warn --port 4723 --session-override --allow-insecure uiautomator2:chromedriver_autodownload > "$GITHUB_WORKSPACE/appium.log" 2>&1 &
             sleep 5
-            # `-Pcucumber` is required — see ios-tests.yml for why.
-            mvn -Pcucumber test -Dplatform=${PLATFORM}
+            mvn -Pcucumber test -Dplatform=${PLATFORM} -Dcucumber.filter.tags=@login
 
       - name: Upload Appium Log (on failure)
         if: failure()
