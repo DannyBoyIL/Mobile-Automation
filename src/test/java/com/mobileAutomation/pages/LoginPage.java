@@ -23,6 +23,7 @@ public class LoginPage extends BasePage {
     @iOSXCUITFindBy(accessibility = "loginBtn")
     private WebElement loginButton;
 
+    // TODO why initiate logger if there's BasePage logger?
     private static final Logger logger = LoggerFactory.getLogger(LoginPage.class);
 
     public void login(String username, String password) {

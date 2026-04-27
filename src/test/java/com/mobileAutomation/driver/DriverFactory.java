@@ -48,7 +48,13 @@ public class DriverFactory {
                 .amend("uiautomator2ServerLaunchTimeout", 120000)
                 .amend("skipServerInstallation", true)
                 .amend("skipDeviceInitialization", true)
-                .amend("skipInstall", true);
+                .amend("skipInstall", true)
+                .amend("chromedriverAutodownload", true);
+
+        String chromedriverPathOverride = System.getProperty("chromedriver.path");
+        if (chromedriverPathOverride != null && !chromedriverPathOverride.isBlank()) {
+            options.amend("chromedriverExecutable", chromedriverPathOverride);
+        }
 
         return new AndroidDriver(new URL(APPIUM_URL), options);
     }
@@ -74,6 +80,62 @@ public class DriverFactory {
         // Keep existing local behavior unless CI explicitly enables single-session mode.
         options.setCapability("appium:noReset", ciSingleSession);
         options.setCapability("appium:fullReset", false);
+
+        // Keyboard handling. iOS Simulators store "Connect Hardware Keyboard" per
+        // device, and the default differs between models (iPhone 17 / iOS 26.1 ships
+        // with it ON; iPhone 16e ships with it OFF). When the hardware keyboard is
+        // connected, iOS hides the on-screen keyboard and `sendKeys` drives the Mac
+        // keyboard at a speed `secureTextEntry` fields can't always commit fast
+        // enough — characters get dropped or routed to the previously-focused field,
+        // which surfaces as "Login with valid credentials" being rejected with
+        // <Invalid> on iPhone 17 but passing on iPhone 16e (the only difference is
+        // this setting).
+        //
+        // Forcing the software keyboard makes the behavior identical across models:
+        //   - connectHardwareKeyboard:false        — XCUITest sets the simulator
+        //     pref so the soft keyboard appears regardless of local default.
+        //   - forceTurnOnSoftwareKeyboard:true     — belt-and-suspenders for cases
+        //     where the prefs file got reset (Erase All Content & Settings, fresh
+        //     CI runner image, etc.).
+        //
+        // NOTE: do NOT set `appium:autoDismissAlerts:true` here. It races XCUITest's
+        // alert monitor against the test's own alert assertions: on `@login @negative`
+        // scenarios the "Invalid login credentials" native alert is sometimes
+        // dismissed by the monitor before LoginFlow can detect it, leaving the flow
+        // to throw IllegalStateException after both isVisible() polls expire. If a
+        // "Save Password / Not Now" autofill prompt ever does appear between typing
+        // and submit, handle it explicitly at the LoginPage level instead.
+        options.setCapability("appium:connectHardwareKeyboard", false);
+        options.setCapability("appium:forceTurnOnSoftwareKeyboard", true);
+
+        // WebView discovery tuning. XCUITest defaults (10 retries × 5000ms) are often
+        // tight for a cold-start simulator where WebKit's inspector takes a beat to
+        // attach after the WKWebView mounts. These values only affect how patiently
+        // Appium looks for WEBVIEW_* handles — no effect on native-only tests.
+        //
+        // IMPORTANT: none of this helps if the app's WKWebView isn't inspectable in
+        // the first place. Since iOS 16.4, WKWebView is only remote-debuggable when
+        // the app sets `webView.isInspectable = true` in native code. Verify the
+        // TheApp build you're running has this set for iOS sanity / Cucumber runs.
+        options.setCapability("appium:webviewConnectRetries", 30);
+        options.setCapability("appium:webviewConnectTimeout", 10_000);
+        options.setCapability("appium:includeSafariInWebviews", true);
+
+        // The XCUITest driver matches inspector pages against a hardcoded list of
+        // bundle IDs (com.apple.WebKit.WebContent, com.apple.SafariViewService,
+        // the app's own bundleId, com.apple.mobilesafari, plus any IDs supplied
+        // here). Web Inspector reports React-Native host apps with the bundleId
+        // `process-<ExecutableName>` rather than the CFBundleIdentifier — for
+        // TheApp that's `process-TheApp` — so without this hint the driver
+        // ignores TheApp's pages and latches onto the WebContent helper process,
+        // which has no pageArray, leading to "No available web pages after N
+        // retries" and only NATIVE_APP being returned. See appium log:
+        //   "You may also consider providing more values to
+        //    'additionalWebviewBundleIds' capability to match other applications."
+        // Using the literal value rather than "*" to avoid grabbing unrelated
+        // helper processes.
+        options.setCapability("appium:additionalWebviewBundleIds",
+                java.util.List.of("process-TheApp"));
 
         return new IOSDriver(new URL(APPIUM_URL), options);
     }

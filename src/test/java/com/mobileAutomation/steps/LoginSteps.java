@@ -1,8 +1,10 @@
 package com.mobileAutomation.steps;
 
+import com.mobileAutomation.credentials.Credentials;
+import com.mobileAutomation.credentials.CredentialsStore;
 import com.mobileAutomation.flows.LoginFlow;
 import com.mobileAutomation.flows.LoginResult;
-import com.mobileAutomation.pages.InvalidLoginDialog;
+import com.mobileAutomation.pages.alerts.InvalidLoginAlert;
 import com.mobileAutomation.pages.SecretPage;
 import io.cucumber.java.en.*;
 import org.slf4j.Logger;
@@ -18,10 +20,11 @@ public class LoginSteps {
     private SecretPage secretPage;
     private static final Logger logger = LoggerFactory.getLogger(LoginSteps.class);
 
-    @When("the user logs in with username {string} and password {string}")
-    public void login(String user, String pw) {
-        logger.info("STEP: User logs in as '{}'", user);
-        loginResult = loginFlow.login(user, pw);
+    @When("the user logs in as {string}")
+    public void login(String alias) {
+        logger.info("STEP: User logs in as '{}'", alias);
+        Credentials c = CredentialsStore.get(alias);
+        loginResult = loginFlow.login(c.username(), c.password());
     }
 
     @Then("the secret area should be displayed")
@@ -33,8 +36,12 @@ public class LoginSteps {
     }
 
     @And("the logged in user should be {string}")
-    public void verifyUser(String username) {
-        Assert.assertTrue(secretPage.loggedInUserText().contains(username), "Expected username to be displayed");
+    public void verifyUser(String alias) {
+        Credentials c = CredentialsStore.get(alias);
+        Assert.assertTrue(
+                secretPage.loggedInUserText().contains(c.username()),
+                "Expected username for alias '" + alias + "' to be displayed"
+        );
         secretPage.logOut();
     }
 
@@ -42,8 +49,8 @@ public class LoginSteps {
     public void invalidLogin() {
         logger.info("STEP: Expect invalid login alert");
         LoginResult.Invalid invalid = assertInstanceOf(LoginResult.Invalid.class, loginResult);
-        InvalidLoginDialog dialog = invalid.dialog();
-        Assert.assertTrue(dialog.isVisible());
-        dialog.accept();
+        InvalidLoginAlert alert = invalid.alert();
+        Assert.assertTrue(alert.isVisible());
+        alert.dismiss();
     }
 }

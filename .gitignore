@@ -15,3 +15,11 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+# Local secrets — credentials for the login Cucumber suite live here.
+# CI gets the same keys via GitHub Actions Secrets; the file itself never
+# leaves the dev machine. See .env.example for the canonical key list.
+.env
+.env.local
+.env.*.local
+credentials.properties

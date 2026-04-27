@@ -15,7 +15,7 @@ import io.cucumber.testng.CucumberOptions;
                 "summary",
                 "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
         },
-        tags = "@login"
+        tags = "@login or @webview"
 )
 public class TestRunner extends AbstractTestNGCucumberTests {
 

@@ -11,7 +11,20 @@ public class HomePage extends BasePage {
     @iOSXCUITFindBy(accessibility = "Login Screen")
     private WebElement loginEntry;
 
+
+    @SuppressWarnings("unused")
+//    @AndroidFindBy(uiAutomator =
+//            "new UiScrollable(new UiSelector().scrollable(true).instance(0))"
+//            + ".scrollIntoView(new UiSelector().description(\"Webview Demo\"))")
+    @AndroidFindBy(accessibility = "Webview Demo")
+    @iOSXCUITFindBy(accessibility = "Webview Demo")
+    private WebElement webViewEntry;
+
     public void goToLogin() {
         click(loginEntry);
+    }
+
+    public void goToWebViewDemo() {
+        click(webViewEntry);
     }
 }

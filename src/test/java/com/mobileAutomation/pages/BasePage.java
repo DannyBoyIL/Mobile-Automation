@@ -80,7 +80,12 @@ public abstract class BasePage {
     }
 
     protected void type(WebElement element, String text) {
-        logger.debug("Typing '{}' into element: {}", text, describe(element));
+        // Intentionally NOT logging the value — `type()` is the entry point for
+        // password fields too (LoginPage.enterCredentials -> type), and writing
+        // raw passwords to logs at any level is bad practice. Length is enough
+        // to confirm `sendKeys` actually moved characters; the field identity
+        // comes from the element description.
+        logger.debug("Typing {} chars into element: {}", text == null ? 0 : text.length(), describe(element));
         clear(element);
         element.sendKeys(text);
     }
@@ -98,8 +103,10 @@ public abstract class BasePage {
     protected boolean isVisible(WebElement element) {
         try {
             waitForVisibility(element);
+            logger.debug("Element visible: {}", element);
             return true;
         } catch (Exception e) {
+            logger.debug("Element NOT visible: {}", element);
             return false;
         }
     }

@@ -115,6 +115,17 @@
             <version>2.17.1</version>
         </dependency>
 
+        <!-- dotenv-java: loads `.env` file at project root into the
+             credentials lookup chain. Process env vars take precedence;
+             .env is the local-dev fallback. CI uses GitHub Secrets to
+             inject the same keys as env vars and never reads the file. -->
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <!-- ===================== -->
@@ -123,7 +134,12 @@
     <build>
         <plugins>
 
-            <!-- Surefire -->
+            <!-- Surefire.
+                 By default, we run NOTHING in the test phase. Surefire's default include pattern (**/Test*.java) would
+                 otherwise pick up `TestRunner.java` — the Cucumber entry point — and bring up an Appium session on
+                 every `mvn test` or `mvn verify`. The Cucumber suite is opt-in via the `cucumber` profile (which
+                 re-enables this plugin), and the WebViewContextSanityIT runs via Failsafe in the integration-test
+                 phase. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -131,10 +147,14 @@
                 <configuration>
                     <useModulePath>false</useModulePath>
                     <testNGArtifactName>org.testng:testng</testNGArtifactName>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
 
-            <!-- FAILSAFE (for device real/slow tests) -->
+            <!-- FAILSAFE (for device real/slow tests, e.g. WebViewContextSanityIT).
+                 Surefire's default include pattern (**/*Test.java) intentionally does NOT pick these up — anything that
+                 needs an Appium session belongs here so `mvn test` stays cheap. Run with `mvn verify -Dit.test=<Name>
+                 -Dplatform=ios|android`. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
@@ -152,6 +172,14 @@
                         <include>**/*IT.java</include>
                         <include>**/*E2E.java</include>
                     </includes>
+                    <!-- Forked test JVM doesn't inherit -D properties from the outer mvn process unless they're passed
+                         explicitly here. Mirrors the cucumber Surefire profile's wiring. -->
+                    <systemPropertyVariables>
+                        <platform>${platform}</platform>
+                        <allure.results.directory>
+                            ${project.basedir}/allure-results
+                        </allure.results.directory>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
 
@@ -188,6 +216,9 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
+                            <!-- Re-enable Surefire (the top-level config skips the test phase by default — see the
+                                 comment next to the parent plugin block). -->
+                            <skipTests>false</skipTests>
                             <includes>
                                 <include>**/TestRunner.java</include>
                             </includes>
@@ -216,6 +247,9 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
+                            <!-- Re-enable Surefire (the top-level config skips the test phase by default — see the
+                                 comment next to the parent plugin block). -->
+                            <skipTests>false</skipTests>
                             <suiteXmlFiles>
                                 <suiteXmlFile>
                                     src/test/resources/testng-mobile-parallel.xml

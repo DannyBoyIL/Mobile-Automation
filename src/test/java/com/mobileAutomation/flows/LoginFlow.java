@@ -1,7 +1,7 @@
 package com.mobileAutomation.flows;
 
 import com.mobileAutomation.pages.HomePage;
-import com.mobileAutomation.pages.InvalidLoginDialog;
+import com.mobileAutomation.pages.alerts.InvalidLoginAlert;
 import com.mobileAutomation.pages.LoginPage;
 import com.mobileAutomation.pages.SecretPage;
 import org.slf4j.Logger;
@@ -27,10 +27,10 @@ public class LoginFlow {
         logger.info("FLOW: Submitting credentials");
         loginPage.login(username, password);
 
-        InvalidLoginDialog dialog = new InvalidLoginDialog();
-        if (dialog.isVisible()) {
+        InvalidLoginAlert alert = new InvalidLoginAlert();
+        if (alert.isVisible()) {
             logger.info("FLOW RESULT: Application rejected credentials");
-            return new LoginResult.Invalid(dialog);
+            return new LoginResult.Invalid(alert);
         }
 
         SecretPage secret = new SecretPage();
