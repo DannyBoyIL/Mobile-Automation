@@ -70,7 +70,9 @@ jobs:
         id: cache-appium
         uses: actions/cache@v4
         with:
-          path: ~/.npm-global
+          path: |
+            ~/.npm-global
+            ~/.appium
           key: appium-xcuitest-${{ runner.os }}-${{ hashFiles('.github/workflows/ios-tests.yml') }}
 
       - name: Cache WebDriverAgent Build
