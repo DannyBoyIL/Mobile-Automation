@@ -80,19 +80,16 @@ jobs:
           path: /tmp/wda-deriveddata
           key: wda-${{ runner.os }}-${{ env.IOS_PLATFORM_VERSION }}-${{ hashFiles('.github/workflows/ios-tests.yml') }}
 
+      - name: Add Appium to PATH
+        run: |
+          npm config set prefix ~/.npm-global
+          echo "$HOME/.npm-global/bin" >> $GITHUB_PATH
+
       - name: Install Appium
         if: steps.cache-appium.outputs.cache-hit != 'true'
         run: |
-          npm config set prefix ~/.npm-global
           npm install -g appium
-          appium driver install xcuitest
-
-      - name: Configure npm prefix
-        if: steps.cache-appium.outputs.cache-hit == 'true'
-        run: npm config set prefix ~/.npm-global
-
-      - name: Add Appium to PATH
-        run: echo "$HOME/.npm-global/bin" >> $GITHUB_PATH
+          ~/.npm-global/bin/appium driver install xcuitest
 
       - name: Wait for iOS Simulator
         run: xcrun simctl bootstatus "${SIM_DEVICE}" -b
