@@ -21,6 +21,7 @@ jobs:
       PLATFORM: ios
       IOS_PLATFORM_VERSION: "17.5"
       CI_SINGLE_SESSION: "true"
+      WDA_DERIVED_DATA_PATH: /tmp/wda-deriveddata
       LOGIN_VALID_USER: ${{ secrets.LOGIN_VALID_USER }}
       LOGIN_VALID_PASSWORD: ${{ secrets.LOGIN_VALID_PASSWORD }}
     steps:
@@ -49,8 +50,6 @@ jobs:
           data = json.loads(raw)
           data["deviceName"] = "${{ env.SIM_DEVICE }}"
           data["platformVersion"] = "${{ env.IOS_PLATFORM_VERSION }}"
-          data["derivedDataPath"] = "/tmp/wda-deriveddata"
-          data["noReset"] = True
           path.write_text(json.dumps(data, indent=4) + "\n")
           print("Updated ios.json:", data)
           PY

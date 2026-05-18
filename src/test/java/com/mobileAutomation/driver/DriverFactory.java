@@ -77,6 +77,11 @@ public class DriverFactory {
         options.setCapability("appium:wdaStartupRetryInterval", 20000);
         options.setCapability("appium:useNewWDA", false);
 
+        String wdaDerivedDataPath = System.getenv("WDA_DERIVED_DATA_PATH");
+        if (wdaDerivedDataPath != null && !wdaDerivedDataPath.isBlank()) {
+            options.setCapability("appium:derivedDataPath", wdaDerivedDataPath);
+        }
+
         // Keep existing local behavior unless CI explicitly enables single-session mode.
         options.setCapability("appium:noReset", ciSingleSession);
         options.setCapability("appium:fullReset", false);
