@@ -1,5 +1,6 @@
 package com.mobileAutomation.config;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.InputStream;
@@ -15,7 +16,9 @@ public class DeviceConfig {
                 throw new RuntimeException("Config file not found: " + fileName);
             }
 
-            return new ObjectMapper().readValue(is, clazz);
+            return new ObjectMapper()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .readValue(is, clazz);
         } catch (Exception e) {
             throw new RuntimeException("Failed to load config: " + fileName, e);
         }
